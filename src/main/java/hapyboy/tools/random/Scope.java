@@ -1,5 +1,7 @@
 package hapyboy.tools.random;
 
+import hapyboy.tools.exception.EmptyException;
+
 import java.util.Random;
 /*
  * 用于得到自定义范围内的随机数;
@@ -39,5 +41,12 @@ public class Scope {
 		for(int i=0;i<51;i++){
 			System.out.println(scope.next());
 		}
+	}
+	public int surplus(){
+		return index;
+	}
+	public boolean hasNext() {
+		
+		return index == 0;
 	}
 }
