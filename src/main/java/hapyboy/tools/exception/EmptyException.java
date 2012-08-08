@@ -1,4 +1,4 @@
-package hapyboy.tools.random;
+package hapyboy.tools.exception;
 
 public class EmptyException extends Exception {
 
