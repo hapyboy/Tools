@@ -69,16 +69,17 @@ public class BaseQueue implements BQueue {
 		Object[] newqueue = new Object[capacity];
 		if(head<end){
 			System.arraycopy(queue, head, newqueue, 0, count);
-			head =0;
-			end = count;
-			return;
+		}else{
+			int c = queue.length -head;
+			System.arraycopy(queue, head, newqueue, 0, c);
+			System.arraycopy(queue, 0, newqueue, c, end);
 		}
 		
-		int c = queue.length -head;
-		System.arraycopy(queue, head, newqueue, 0, c);
-		System.arraycopy(queue, 0, newqueue, c, end);
+		
+		
 		head =0;
 		end = count;
+		queue = newqueue;
 	}
 
 	private final int calculateCapacity() {
@@ -130,11 +131,11 @@ public class BaseQueue implements BQueue {
 		
 		return new  Iterator<Object>(){
 			private int index;
-			private int c;//count
+			
 
 			public boolean hasNext() {
 				
-				return c <= count;
+				return index < count;
 			}
 
 			public Object next() {
@@ -142,7 +143,6 @@ public class BaseQueue implements BQueue {
 				 * 如果
 				 */
 				if(hasNext()){
-					c++;
 					return get((head+index++)%capacity);
 				}
 				throw new NoSuchElementException();
