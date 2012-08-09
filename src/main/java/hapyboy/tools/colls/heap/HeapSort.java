@@ -24,7 +24,7 @@ public class HeapSort <T>{
 			return false;
 		}
 		if(index >=heap.length){
-			expend();
+			expands();
 		}
 		int ori = index++; // Origin
 		int t; // Target
@@ -41,7 +41,7 @@ public class HeapSort <T>{
 		return true;
 	}
 
-	private void expend() {
+	private void expands() {
 		int length = heap.length;
 		length += length>>1;
 		Object[] arr = new Object[length];

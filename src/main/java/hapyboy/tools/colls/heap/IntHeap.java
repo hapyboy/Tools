@@ -28,7 +28,7 @@ public IntHeap() {
 	public boolean add(int p) {
 		
 		if(index >=capacity){
-			expend();
+			expands();
 		}
 		int s = index++; // Source
 		int t; // Target
@@ -45,7 +45,7 @@ public IntHeap() {
 		return true;
 	}
 
-	private void expend() {
+	private void expands() {
 		
 		capacity += capacity>>1;
 		int[] arr = new int[capacity];
