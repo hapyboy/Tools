@@ -11,16 +11,7 @@ public class BQueueTest {
 	BaseQueue queue;
 	final int C = 500;
 	
-	@Test
-	public void testP(){
-		queue = new BaseQueue();
-		for (int i = 0; i < C; i++) {
-			assertTrue(queue.add(i));
-		}
-		for (int i = 0; i < C; i++) {
-			System.out.println(queue.remove());
-		}
-	}
+	
 	@Test
 	public void testRemoveAndAdd() {
 		queue = new BaseQueue();

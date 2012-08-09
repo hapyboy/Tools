@@ -3,7 +3,6 @@ package hapyboy.tools.colls.heap;
 import java.util.Arrays;
 
 import hapyboy.tools.exception.EmptyException;
-import hapyboy.tools.random.Scope;
 
 
 
@@ -85,15 +84,5 @@ public IntHeap() {
 	public int size() {
 		return index;
 	}
-	public static void main(String[] args) throws EmptyException {
-		final int C = 500;
-		Scope scope = new Scope(C);
-		IntHeap  heap = new IntHeap();
-		for(int i=0;i<C;i++){
-			heap.add(scope.next());
-		}
-		for(int i=0;i<C;i++){
-			System.out.println(heap.remove());
-		}
-	}
+	
 }
