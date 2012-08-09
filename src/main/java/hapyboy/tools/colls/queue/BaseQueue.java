@@ -33,7 +33,7 @@ public class BaseQueue implements BQueue {
 	public boolean add(Object obj) {
 
 		if (count >= capacity) {
-			extend();
+			extands();
 		}
 		queue[end++] = obj;
 
@@ -57,14 +57,14 @@ public class BaseQueue implements BQueue {
 			head = 0;
 		}
 		if( count>16 && capacity/count>2 ){
-			lessen();
+			shrink();
 		}
 
 		return obj; // $codepro.audit.disable
 
 	}
 
-	private void lessen() {
+	private void shrink() {
 		capacity = calculateCapacity();
 		Object[] newqueue = new Object[capacity];
 		if(head<end){
@@ -86,7 +86,7 @@ public class BaseQueue implements BQueue {
 		return count + (count>>>1);
 	}
 
-	private void extend() {
+	private void extands() {
 		capacity = calculateCapacity();
 
 		if (head == 0) {
@@ -149,8 +149,8 @@ public class BaseQueue implements BQueue {
 			}
 
 			public void remove() {
-				//什么也不做
-				//队列禁止从中间非头部删除
+				//队列禁止从中间非头部删除，如果真要那么做，你应该考虑的是应不应该用队列
+				throw new UnsupportedOperationException("本迭代器不支持remove方法！");
 				
 			}
 			
