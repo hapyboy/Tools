@@ -1,5 +1,7 @@
 package hapyboy.tools.number;
 
+import java.util.NoSuchElementException;
+
 //求素数（质数）
 public class Primes {
 	private static final int L = 1000;
@@ -49,6 +51,16 @@ public class Primes {
 
 	private static int[] get(int count) {
 		
+		if(count<1){
+			throw new NoSuchElementException("请输入有效数字（大于1）！");
+		}
+		if(count<4){
+			primes = new int[3];
+			add(2);
+			add(3);
+			add(5);
+			return primes;
+		}
 		primes = new int[count];
 		add(2);
 		add(3);
