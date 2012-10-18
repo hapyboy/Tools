@@ -1,55 +1,68 @@
 package hapyboy.tools.colls.stack;
 
+import hapyboy.tools.colls.GenericUtil;
+
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-/*
+
+/**
  * 可扩展专用堆栈,堆栈容量会随着加入元素的增加而自动增加，会随着元素的减少自动减少。
  * 本实现是最基本的，没有对泛型、多线程的支持，这样是为了最简单最快速
  */
-public class BaseStack {
+
+public class ScalableStack<E> implements Stack<E>{
 	/*
 	 * 可扩展专用堆栈
 	 */
 	private int capacity;
 	private int limit;
-	private Object[] stacks;
-	public BaseStack(){
+	private E[] stacks;
+	
+	public ScalableStack(){
 		this(16);
 	}
-	BaseStack(int initcapacity){
+	
+	@SuppressWarnings("unchecked")
+	ScalableStack(int initcapacity){
 		if(initcapacity<16){
 			initcapacity = 16;
 		}
 		capacity = initcapacity;
-		stacks = new Object[capacity];
+		
+		GenericUtil<E> gutil = new GenericUtil<E>();
+		Class<E> clz = gutil.getGeneric(this);
+		
+		stacks = (E[]) Array.newInstance(clz, capacity);
 	}
 	
-	public boolean push( Object obj){
-		if(obj == null){//不保存空值，如果obj为空不会抛出异常，仅仅返回false
+	public boolean push(E e){
+		if(e == null){//不保存空值，如果obj为空不会抛出异常，仅仅返回false
 			return false;
 		}
 		if(limit == capacity){//堆栈满后调用方法来扩展
 			expands();
 		}
-		stacks[limit++]= obj;
+		stacks[limit++] = e;
 		return true;
 	}
+	
 	private void expands() {
 		// 容量扩展方法
 		capacity += capacity>>>1;//这里就不检查capacity超出int最大正数了，一般的应用基本不会超的
 		Arrays.copyOf(stacks, capacity);
 		
 	}
-	public Object pop(){
+	public E pop(){
 		checkEmpty();
-		Object obj = stacks[--limit];
+		E e = stacks[--limit];
 		stacks[limit] = null;
 		if(capacity>16 && capacity/limit >2){
 			lower();
 		}
-		return obj;
+		return e;
 	}
 	
 	private void lower() {
@@ -57,17 +70,19 @@ public class BaseStack {
 		Arrays.copyOf(stacks, capacity);
 		
 	}
-	public Object peek(){
+	
+	public E peek(){
 		checkEmpty();
 		return stacks[limit-1];
 	}
+	
 	private final void checkEmpty() {
 		if(limit == 0){
 			throw new EmptyStackException();
 		}
 	}
 	
-	public Object peek(int index){
+	public E peek(int index){
 		//从顶部开始记数，数字从0开始
 		//如最上面的对象（也就是调用pop会弹出的那个对象）的索引为0，它下面的为1，以此类推
 		if(index >= limit){
@@ -75,7 +90,7 @@ public class BaseStack {
 		}
 		return stacks[limit-1-index];
 	}
-	public int search(Object obj){
+	public int search(E obj){
 		//从顶部开始查找，找到后立即返回索引，如果没找到返回-1
 		int t = limit-1;
 		for (int i = 0; i < limit; i++) {
@@ -90,15 +105,17 @@ public class BaseStack {
 	public boolean isEmpty(){
 		return limit == 0;
 	}
-	public Iterator<?> iterator(){
-		return new Iterator<Object>(){
+
+	@Override
+	public Iterator<E> iterator(){
+		return new Iterator<E>(){
 			private int t = limit-1;
 			public boolean hasNext() {
 				
 				return t>=0;
 			}
 
-			public Object next() {
+			public E next() {
 				if(!hasNext()){
 					throw new NoSuchElementException();
 				}
@@ -106,7 +123,7 @@ public class BaseStack {
 			}
 
 			public void remove() {
-				throw new UnsupportedOperationException("本迭代器不支持remove方法！");
+				throw new RuntimeException("本迭代器不支持remove方法！");
 				
 			}
 			

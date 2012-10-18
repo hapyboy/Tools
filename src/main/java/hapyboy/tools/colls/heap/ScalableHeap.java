@@ -1,25 +1,34 @@
 package hapyboy.tools.colls.heap;
 
+import hapyboy.tools.colls.GenericUtil;
+
+import java.lang.reflect.Array;
 import java.util.Comparator;
 
 
-public class HeapSort <T>{
-	private Object[] heap;
+public class ScalableHeap <E>{
+	private E[] heap;
 	private int index;
-	Comparator<T> cc;
+	Comparator<E> cc;
+	
+	private final Class<E> clz;
 	
 
-	public HeapSort(Comparator<T> comparator) {
+	public ScalableHeap(Comparator<E> comparator) {
 		this(comparator,16);
 	}
 
-	public HeapSort(Comparator<T> comparator,int capacity) {
+	@SuppressWarnings("unchecked")
+	public ScalableHeap(Comparator<E> comparator,int capacity) {
 		this.cc = comparator;
-		heap = new Object[capacity];
+		
+		GenericUtil<E> gutil = new GenericUtil<E>();
+		clz = gutil.getGeneric(this);
+		
+		heap =(E[]) Array.newInstance(clz, capacity);
 	}
 
-	@SuppressWarnings("unchecked")
-	public boolean add(T p) {
+	public boolean add(E p) {
 		if (p == null) {
 			return false;
 		}
@@ -30,7 +39,7 @@ public class HeapSort <T>{
 		int t; // Target
 		while (ori != 0) {
 			t = (ori - 1) >>> 1;// 上一级坐标
-			if (cc.compare(p, (T)heap[t]) > 0) {//只有比上一级大时才继续向上
+			if (cc.compare(p, (E)heap[t]) > 0) {//只有比上一级大时才继续向上
 				heap[ori] = heap[t];
 				ori = t;
 				continue;
@@ -41,32 +50,32 @@ public class HeapSort <T>{
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void expands() {
 		int length = heap.length;
 		length += length>>1;
-		Object[] arr = new Object[length];
+		E[] arr = (E[]) Array.newInstance(clz, length);
 		System.arraycopy(heap, 0, arr, 0, index);
 		heap = arr;
 		arr = null;
 		
 	}
 
-	@SuppressWarnings("unchecked")
-	public T remove() {
+	public E remove() {
 		if (index == 0) {
 			return null;
 		}
-		Object result = heap[0];
-		Object end = heap[--index];
+		E result = heap[0];
+		E end = heap[--index];
 		heap[index] = null;
 		int ori = 0; // Origin
 		int t = (ori << 1) + 1; // Target
 		
 		while (t < index) {
 			if (t + 1 < index) {// 防止越界
-				if(cc.compare((T)heap[t], (T)heap[t+1]) < 0 )t++;// 从下级中找一个大的
+				if(cc.compare(heap[t], heap[t+1]) < 0 )t++;// 从下级中找一个大的
 			}
-			if (cc.compare((T)end, (T)heap[t]) < 0) {// 比下级中大的那个小，就向下走
+			if (cc.compare(end, heap[t]) < 0) {// 比下级中大的那个小，就向下走
 				heap[ori] = heap[t];
 				ori = t;
 				t = (ori << 1) + 1;
@@ -76,7 +85,7 @@ public class HeapSort <T>{
 		}
 		heap[ori] = end;
 
-		return (T)result;
+		return result;
 	}
 
 	public int size() {

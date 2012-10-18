@@ -1,74 +1,77 @@
 package hapyboy.tools.colls.queue;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
-public class BQueueTest {
-	BaseQueue queue;
+public class ScalableQueueTest {
+	IQueue<Integer> queue = new Queue();
 	final int C = 500;
-	
-	
+
 	@Test
 	public void testRemoveAndAdd() {
-		queue = new BaseQueue();
+		
 		for (int i = 0; i < C; i++) {
-			assertTrue(queue.add(i));
+			assertTrue(queue.enqueue(i));
 		}
 		assertEquals(C, queue.size());
 		for (int i = 0; i < C; i++) {
-			assertEquals(i, queue.remove());
+			Integer j =i;
+			assertEquals(j, queue.dequeue());
 		}
 		assertEquals(0, queue.size());
 	}
 
 	@Test
 	public void testGet() {
-		queue = new BaseQueue();
-		Object obj = new Object();
-		queue.add(obj);
+		
+		Integer obj = 3;
+		queue.enqueue(obj);
 		for (int i = 0; i < C; i++) {
 			assertEquals(obj, queue.get());
 		}
 		assertEquals(1, queue.size());
-		assertEquals(obj, queue.remove());
+		assertEquals(obj, queue.dequeue());
 		assertEquals(0, queue.size());
 	}
 
 	@Test
 	public void testGetInt() {
-		queue = new BaseQueue();
+		
 		for (int i = 0; i < C; i++) {
-			queue.add(i);
+			queue.enqueue(i);
 		}
 		for (int i = 0; i < C; i++) {
-			assertEquals(i, queue.get(i));
+			Integer j = i;
+			assertEquals(j, queue.get(i));
 		}
 	}
 	@Test(expected = NoSuchElementException.class)
 	public void testGetException() {
-		queue = new BaseQueue();
+		
 		queue.get();
 	}
 	@Test(expected = NoSuchElementException.class)
 	public void testGetException2() {
-		queue = new BaseQueue();
-		queue.add(new Object());
+		
+		queue.enqueue(5);
 		queue.get(10);
 	}
 	
 
 	@Test
 	public void testIterator() {
-		queue = new BaseQueue();
+		
 		for (int i = 0; i < C; i++) {
-			assertTrue(queue.add(i));
+			assertTrue(queue.enqueue(i));
 		}
-		@SuppressWarnings("unchecked")
-		Iterator<Integer> ite =  (Iterator<Integer>) queue.iterator();
+
+		Iterator<Integer> ite = queue.iterator();
 		for (int i = 0; i < C; i++) {
 			assertTrue(ite.hasNext());
 			Integer I = i;
@@ -80,10 +83,14 @@ public class BQueueTest {
 
 	@Test
 	public void testHasNext() {
-		queue = new BaseQueue();
-		assertFalse(queue.hasNext());
-		queue.add(new Object());
-		assertTrue(queue.hasNext());
+		
+		assertTrue(queue.isEmpty());
+		queue.enqueue(2);
+		assertFalse(queue.isEmpty());
+	}
+	static class Queue extends ScalableQueue<Integer>
+	{
+		
 	}
 
 }
