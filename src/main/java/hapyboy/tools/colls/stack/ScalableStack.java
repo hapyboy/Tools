@@ -17,8 +17,11 @@ public abstract class ScalableStack<E> implements Stack<E>{
 	/*
 	 * 可扩展专用堆栈
 	 */
+	/** 容量*/
 	private int capacity;
+	/** 游标*/
 	private int limit;
+	/** 栈容器*/
 	private E[] stacks;
 	
 	/** 默认初始容量*/
