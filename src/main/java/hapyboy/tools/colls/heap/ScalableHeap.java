@@ -11,11 +11,14 @@ public abstract class ScalableHeap <E>{
 	private int index;
 	Comparator<E> cc;
 	
+	/** 默认初始容量*/
+	private static final int LEN = 16;
+	
 	private final Class<E> clz;
 	
 
 	public ScalableHeap(Comparator<E> comparator) {
-		this(comparator,16);
+		this(comparator,LEN);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -24,6 +27,14 @@ public abstract class ScalableHeap <E>{
 		
 		GenericUtil<E> gutil = new GenericUtil<E>();
 		clz = gutil.getGeneric(this);
+		
+		heap =(E[]) Array.newInstance(clz, capacity);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ScalableHeap(Class<E> clz, Comparator<E> comparator,int capacity) {
+		this.cc = comparator;
+		this.clz = clz;
 		
 		heap =(E[]) Array.newInstance(clz, capacity);
 	}
@@ -37,7 +48,7 @@ public abstract class ScalableHeap <E>{
 	 */
 	public static <T> ScalableHeap<T> newInstance(Class<T> clz, Comparator<T> comparator)
 	{
-		return newInstance(clz,comparator,16);
+		return newInstance(clz,comparator,LEN);
 	}
 	
 	/**
@@ -48,14 +59,14 @@ public abstract class ScalableHeap <E>{
 	 * @param initCapacity 初始化容量
 	 * @return 堆实例
 	 */
-	public static <T> ScalableHeap<T> newInstance(Class<T> clz, Comparator<T> comparator, int initCapacity)
+	public static <T> ScalableHeap<T> newInstance(final Class<T> clz, Comparator<T> comparator, int initCapacity)
 	{
 		class SimpleHeap extends ScalableHeap<T>
 		{
 
 			public SimpleHeap(Comparator<T> comparator, int capacity)
 			{
-				super(comparator, capacity);
+				super(clz, comparator, capacity);
 			}
 		
 		}

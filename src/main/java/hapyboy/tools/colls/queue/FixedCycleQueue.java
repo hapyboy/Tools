@@ -37,6 +37,13 @@ public abstract class FixedCycleQueue<E> implements IQueue<E>
 		queue = (E[]) Array.newInstance(clz, length);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public FixedCycleQueue(Class<E> clz, int length)
+	{
+		this.len = length;
+		queue = (E[]) Array.newInstance(clz, length);
+	}
+	
 	/**
 	 * 获取类实例
 	 * 
@@ -44,14 +51,14 @@ public abstract class FixedCycleQueue<E> implements IQueue<E>
 	 * @param capacity 初始容量
 	 * @return 固定长度环绕队列
 	 */
-	public static <T> FixedCycleQueue<T> newInstance(Class<T> claz, int capacity)
+	public static <T> FixedCycleQueue<T> newInstance(final Class<T> claz, int capacity)
 	{
 		class SimpleQueue extends FixedCycleQueue<T>
 		{
 
-			public SimpleQueue(int capacity)
+			public SimpleQueue( int capacity)
 			{
-				super(capacity);
+				super(claz,capacity);
 			}
 			
 		}

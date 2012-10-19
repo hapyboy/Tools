@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 
 public class ScalableQueueTest {
-	IQueue<Integer> queue = new Queue();
+	IQueue<Integer> queue = ScalableQueue.newInstance(Integer.class);
 	final int C = 500;
 
 	@Test
@@ -87,10 +87,6 @@ public class ScalableQueueTest {
 		assertTrue(queue.isEmpty());
 		queue.enqueue(2);
 		assertFalse(queue.isEmpty());
-	}
-	static class Queue extends ScalableQueue<Integer>
-	{
-		
 	}
 
 }

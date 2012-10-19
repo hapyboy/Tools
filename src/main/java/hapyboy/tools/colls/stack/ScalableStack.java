@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * 可扩展堆,堆容量会随着加入元素的增加而自动增加，会随着元素的减少自动减少。
+ * 可扩展栈,栈容量会随着加入元素的增加而自动增加，会随着元素的减少自动减少。
  * 本实现是非线程安全的，为了更简单更快速
  */
 
@@ -21,20 +21,32 @@ public abstract class ScalableStack<E> implements Stack<E>{
 	private int limit;
 	private E[] stacks;
 	
+	/** 默认初始容量*/
+	private static final int LEN = 16;
+	
 	public ScalableStack(){
-		this(16);
+		this(LEN);
 	}
 	
 	@SuppressWarnings("unchecked")
 	ScalableStack(int initcapacity){
-		if(initcapacity<16){
-			initcapacity = 16;
+		if(initcapacity < LEN){
+			initcapacity = LEN;
 		}
 		capacity = initcapacity;
 		
 		GenericUtil<E> gutil = new GenericUtil<E>();
 		Class<E> clz = gutil.getGeneric(this);
 		
+		stacks = (E[]) Array.newInstance(clz, capacity);
+	}
+	
+	@SuppressWarnings("unchecked")
+	ScalableStack(Class<E> clz, int initcapacity){
+		if(initcapacity < LEN){
+			initcapacity = LEN;
+		}
+		capacity = initcapacity;
 		stacks = (E[]) Array.newInstance(clz, capacity);
 	}
 	
@@ -46,7 +58,7 @@ public abstract class ScalableStack<E> implements Stack<E>{
 	 */
 	public static <T> ScalableStack<T> newInstance(Class<T> clz)
 	{
-		return newInstance(clz, 16);
+		return newInstance(clz, LEN);
 	}
 	
 	/**
@@ -56,13 +68,13 @@ public abstract class ScalableStack<E> implements Stack<E>{
 	 * @param initCapacity 初始化容量
 	 * @return 栈实例
 	 */
-	public static <T> ScalableStack<T> newInstance(Class<T> clz, int initCapacity)
+	public static <T> ScalableStack<T> newInstance(final Class<T> clz, int initCapacity)
 	{
 		class SimpleStack extends ScalableStack<T>
 		{
 			SimpleStack(int capacity)
 			{
-				super(capacity);
+				super(clz,capacity);
 			}
 		}
 		

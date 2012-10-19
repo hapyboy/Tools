@@ -24,6 +24,9 @@ public class ScalableQueue<E> implements IQueue<E>{
 	private int count;
 	private int capacity;
 	
+	/** 默认初始容量*/
+	private static final int LEN = 16;
+	
 	private final Class<E> clz;
 
 	public ScalableQueue() {
@@ -32,8 +35,8 @@ public class ScalableQueue<E> implements IQueue<E>{
 	
 	@SuppressWarnings("unchecked")
 	public ScalableQueue(int length) {
-		if (length < 16) {
-			length = 16;
+		if (length < LEN) {
+			length = LEN;
 		}
 		capacity = length;
 		GenericUtil<E> gutil = new GenericUtil<E>();
@@ -43,6 +46,28 @@ public class ScalableQueue<E> implements IQueue<E>{
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	private ScalableQueue(Class<E> clz, int length)
+	{
+		this.clz = clz;
+		if (length < LEN) {
+			length = LEN;
+		}
+		capacity = length;
+		queue = (E[]) Array.newInstance(clz, length);
+		
+	}
+	
+	/**
+	 * 获取可扩展队列,采用默认初始容量
+	 * 
+	 * @param claz 队列内要容纳数据的类型
+	 * @return 可扩展队列实例
+	 */
+	public static <T> ScalableQueue<T> newInstance(Class<T> claz)
+	{
+		return newInstance(claz, LEN);
+	}
 	/**
 	 * 获取可扩展队列
 	 * 
@@ -50,14 +75,15 @@ public class ScalableQueue<E> implements IQueue<E>{
 	 * @param capacity 初始化容量
 	 * @return 可扩展队列实例
 	 */
-	public static <T> ScalableQueue<T> newInstance(Class<T> claz, int capacity)
+	public static <T> ScalableQueue<T> newInstance(final Class<T> clz, int capacity)
 	{
+		
 		class SimpleQueue extends ScalableQueue<T>
 		{
 
 			public SimpleQueue(int capacity)
 			{
-				super(capacity);
+				super(clz,capacity);
 			}
 			
 		}
