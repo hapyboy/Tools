@@ -42,12 +42,13 @@ public interface Stack<E> extends Iterable<E>{
 	E peek(int index);
 	
 	/**
-	 * 查找制定元素
+	 * 查找指定的元素
+	 * 从顶部开始查找，找到后立即返回索引
 	 * 
 	 * @param o 要查找的元素
-	 * @return 第一个找到元素的索引，如果没找到返回-1
+	 * @return 元素所在的索引，如果没找到返回-1
 	 */
-	int search(E o);//从顶部开始查找，找到后立即返回索引，
+	int search(E e);
 	
 	/**
 	 * 查看堆是不是空的
@@ -55,5 +56,10 @@ public interface Stack<E> extends Iterable<E>{
 	 * @return 堆空与否
 	 */
 	boolean isEmpty();
+	
+	/**
+	 * 清空栈
+	 */
+	void clear();
 	
 }

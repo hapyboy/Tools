@@ -13,18 +13,17 @@ import java.util.NoSuchElementException;
  */
 public class FixedStack<E> implements Stack<E>
 {
-
 	/** 容量*/
-	private int capacity;
+	protected int capacity;
 	
 	/** 游标同时起计数作用*/
-	private int cur;
+	protected int cur;
 	
 	/** 栈容器*/
-	private E[] stacks;
+	protected E[] stacks;
 	
 	@SuppressWarnings("unchecked")
-	FixedStack(int initcapacity){
+	protected FixedStack(int initcapacity){
 		capacity = initcapacity;
 		
 		GenericUtil<E> gutil = new GenericUtil<E>();
@@ -39,6 +38,13 @@ public class FixedStack<E> implements Stack<E>
 		stacks = (E[]) Array.newInstance(clz, capacity);
 	}
 	
+	/**
+	 * 获取定长栈
+	 * 
+	 * @param clz 栈要容纳数据的类型
+	 * @param capacity 栈大小
+	 * @return 固定长度的栈实例
+	 */
 	public static <T> FixedStack<T> newInstance(Class<T> clz, int capacity)
 	{
 		return new FixedStack<T>(clz,capacity);
@@ -88,14 +94,14 @@ public class FixedStack<E> implements Stack<E>
 	}
 
 	@Override
-	public int search(E o)
+	public int search(E e)
 	{
 		if(cur <1){
 			return -1;
 		}
 		for(int i = cur-1; i>=0; i--)
 		{
-			if(stacks[i].equals(o))
+			if(stacks[i].equals(e))
 			{
 				return cur-i-1;
 			}
@@ -137,6 +143,17 @@ public class FixedStack<E> implements Stack<E>
 			}
 			
 		};
+	}
+
+	@Override
+	public void clear()
+	{
+		if(cur>1){
+			for(;cur>0;){
+				stacks[--cur] = null;
+			}
+		}
+		
 	}
 	
 }

@@ -52,4 +52,18 @@ public interface IQueue<E> extends Iterable<E>
 	 * @return 队列是否为空返回false
 	 */
 	boolean isEmpty();
+	
+	/**
+	 * 查找指定的元素
+	 * 从顶部开始查找，找到后立即返回索引
+	 * 
+	 * @param e 要查找的元素
+	 * @return 元素所在的索引，如果没找到返回-1
+	 */
+	int search(E e);
+	
+	/**
+	 * 清空队列
+	 */
+	void clear();
 }

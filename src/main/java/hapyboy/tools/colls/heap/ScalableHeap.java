@@ -6,23 +6,26 @@ import java.lang.reflect.Array;
 import java.util.Comparator;
 
 
-public abstract class ScalableHeap <E>{
-	private E[] heap;
-	private int index;
-	Comparator<E> cc;
+public class ScalableHeap <E>
+{
+	/** 堆容器*/
+	protected E[] heap;
+	/** 游标同时也是计数器*/
+	protected int cur;
+	/** 比较器*/
+	protected Comparator<E> cc;
 	
 	/** 默认初始容量*/
-	private static final int LEN = 16;
+	protected static final int LEN = 16;
 	
-	private final Class<E> clz;
+	protected final Class<E> clz;
 	
-
-	public ScalableHeap(Comparator<E> comparator) {
+	protected ScalableHeap(Comparator<E> comparator) {
 		this(comparator,LEN);
 	}
 
 	@SuppressWarnings("unchecked")
-	public ScalableHeap(Comparator<E> comparator,int capacity) {
+	protected ScalableHeap(Comparator<E> comparator,int capacity) {
 		this.cc = comparator;
 		
 		GenericUtil<E> gutil = new GenericUtil<E>();
@@ -61,27 +64,28 @@ public abstract class ScalableHeap <E>{
 	 */
 	public static <T> ScalableHeap<T> newInstance(final Class<T> clz, Comparator<T> comparator, int initCapacity)
 	{
-		class SimpleHeap extends ScalableHeap<T>
-		{
-
-			public SimpleHeap(Comparator<T> comparator, int capacity)
-			{
-				super(clz, comparator, capacity);
-			}
-		
-		}
-		
-		return new SimpleHeap(comparator,initCapacity);
+//		class SimpleHeap extends ScalableHeap<T>
+//		{
+//
+//			public SimpleHeap(Comparator<T> comparator, int capacity)
+//			{
+//				super(clz, comparator, capacity);
+//			}
+//		
+//		}
+//		
+//		return new SimpleHeap(comparator,initCapacity);
+		return new ScalableHeap<T>(clz,comparator,initCapacity);
 	}
 	
 	public boolean add(E p) {
 		if (p == null) {
 			return false;
 		}
-		if(index >=heap.length){
+		if(cur >=heap.length){
 			expands();
 		}
-		int ori = index++; // Origin
+		int ori = cur++; // Origin
 		int t; // Target
 		while (ori != 0) {
 			t = (ori - 1) >>> 1;// 上一级坐标
@@ -101,24 +105,24 @@ public abstract class ScalableHeap <E>{
 		int length = heap.length;
 		length += length>>1;
 		E[] arr = (E[]) Array.newInstance(clz, length);
-		System.arraycopy(heap, 0, arr, 0, index);
+		System.arraycopy(heap, 0, arr, 0, cur);
 		heap = arr;
 		arr = null;
 		
 	}
 
 	public E remove() {
-		if (index == 0) {
+		if (cur == 0) {
 			return null;
 		}
 		E result = heap[0];
-		E end = heap[--index];
-		heap[index] = null;
+		E end = heap[--cur];
+		heap[cur] = null;
 		int ori = 0; // Origin
 		int t = (ori << 1) + 1; // Target
 		
-		while (t < index) {
-			if (t + 1 < index) {// 防止越界
+		while (t < cur) {
+			if (t + 1 < cur) {// 防止越界
 				if(cc.compare(heap[t], heap[t+1]) < 0 )t++;// 从下级中找一个大的
 			}
 			if (cc.compare(end, heap[t]) < 0) {// 比下级中大的那个小，就向下走
@@ -135,7 +139,7 @@ public abstract class ScalableHeap <E>{
 	}
 
 	public int size() {
-		return index;
+		return cur;
 	}
 
 }

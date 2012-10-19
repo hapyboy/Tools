@@ -17,24 +17,24 @@ import java.util.NoSuchElementException;
 
 public class ScalableQueue<E> implements IQueue<E>{
 
-	private E[] queue;
+	protected E[] queue;
 
-	private int head;
-	private int tail;
-	private int count;
-	private int capacity;
+	protected int head;
+	protected int tail;
+	protected int size;
+	protected int capacity;
 	
 	/** 默认初始容量*/
-	private static final int LEN = 16;
+	protected static final int LEN = 16;
 	
-	private final Class<E> clz;
+	protected final Class<E> clz;
 
-	public ScalableQueue() {
-		this(16);
+	protected ScalableQueue() {
+		this(LEN);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ScalableQueue(int length) {
+	protected ScalableQueue(int length) {
 		if (length < LEN) {
 			length = LEN;
 		}
@@ -47,7 +47,7 @@ public class ScalableQueue<E> implements IQueue<E>{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ScalableQueue(Class<E> clz, int length)
+	public ScalableQueue(Class<E> clz, int length)
 	{
 		this.clz = clz;
 		if (length < LEN) {
@@ -75,32 +75,34 @@ public class ScalableQueue<E> implements IQueue<E>{
 	 * @param capacity 初始化容量
 	 * @return 可扩展队列实例
 	 */
-	public static <T> ScalableQueue<T> newInstance(final Class<T> clz, int capacity)
+	public static <T> ScalableQueue<T> newInstance(final Class<T> claz, int capacity)
 	{
+//		
+//		class SimpleQueue extends ScalableQueue<T>
+//		{
+//
+//			public SimpleQueue(int capacity)
+//			{
+//				super(claz,capacity);
+//			}
+//			
+//		}
+//		
+//		return new SimpleQueue(capacity);
 		
-		class SimpleQueue extends ScalableQueue<T>
-		{
-
-			public SimpleQueue(int capacity)
-			{
-				super(clz,capacity);
-			}
-			
-		}
-		
-		return new SimpleQueue(capacity);
+		return new ScalableQueue<T>(claz,capacity);
 	}
 
 
 	@Override
 	public boolean enqueue(E e)
 	{
-		if (count >= capacity) {
+		if (size >= capacity) {
 			extands();
 		}
 		queue[tail++] = e;
 
-		count++;
+		size++;
 		if (tail == capacity) {
 			tail = 0;
 		}
@@ -110,17 +112,17 @@ public class ScalableQueue<E> implements IQueue<E>{
 	@Override
 	public E dequeue()
 	{
-		if (count == 0) {
+		if (size == 0) {
 			throw new NoSuchElementException("队列已取空！");
 		}
 
 		E e = queue[head];
 		queue[head++] = null;
-		count--;
+		size--;
 		if (head == capacity) {
 			head = 0;
 		}
-		if( count>16 && capacity/count>2 ){
+		if( size>16 && capacity/size>2 ){
 			shrink();
 		}
 
@@ -129,7 +131,7 @@ public class ScalableQueue<E> implements IQueue<E>{
 	
 	@Override
 	public E get() {
-		if(count>0){
+		if(size>0){
 			return queue[head];
 		}
 		throw new NoSuchElementException("队列为空，不能get!");
@@ -138,12 +140,12 @@ public class ScalableQueue<E> implements IQueue<E>{
 	@Override
 	public int size() {
 
-		return count;
+		return size;
 	}
 
 	@Override
 	public E get(int index) {
-		if(index>=count){
+		if(index>=size){
 			throw new NoSuchElementException("索引超过界限");
 		}
 		return queue[(index + head) % capacity];
@@ -152,13 +154,34 @@ public class ScalableQueue<E> implements IQueue<E>{
 	@Override
 	public boolean isEmpty()
 	{
-		return count <= 0;
+		return size <= 0;
 	}
+	
+
+	@Override
+	public int search(E e)
+	{
+		// TODO Auto-generated method stub
+		return -1;
+	}
+	
+	@Override
+	public void clear()
+	{
+		if(size < 1){
+			return;
+		}
+		for(;head != tail;){
+			queue[head++] = null;
+			checkHead();
+		}
+	}
+	
 	
 
 	private final int calculateCapacity() {
 		
-		return count + (count>>>1);
+		return size + (size>>>1);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -166,7 +189,7 @@ public class ScalableQueue<E> implements IQueue<E>{
 		capacity = calculateCapacity();
 		E[] newqueue =   (E[]) Array.newInstance(clz, capacity);
 		if(head<tail){
-			System.arraycopy(queue, head, newqueue, 0, count);
+			System.arraycopy(queue, head, newqueue, 0, size);
 		}else{
 			int c = queue.length -head;
 			System.arraycopy(queue, head, newqueue, 0, c);
@@ -176,7 +199,7 @@ public class ScalableQueue<E> implements IQueue<E>{
 		
 		
 		head =0;
-		tail = count;
+		tail = size;
 		queue = newqueue;
 	}
 
@@ -190,7 +213,7 @@ public class ScalableQueue<E> implements IQueue<E>{
 
 		} else {
 			E[] newqueue = (E[]) Array.newInstance(clz, capacity);
-			int c = count-head;
+			int c = size-head;
 			System.arraycopy(queue, head, newqueue, 0, c);
 
 			System.arraycopy(queue, 0, newqueue, c, tail);
@@ -199,8 +222,26 @@ public class ScalableQueue<E> implements IQueue<E>{
 
 		}
 		head = 0;
-		tail = count;
+		tail = size;
 
+	}
+	
+	/** 检查头是否越界*/
+	private final void checkHead()
+	{
+		if(head >= capacity)
+		{
+			head = 0;
+		}		
+	}
+	/** 检查尾是否越界*/
+	private final void checkTail()
+	{
+		if(tail >= capacity)
+		{
+			tail = 0;
+		}
+		
 	}
 
 
@@ -218,7 +259,7 @@ public class ScalableQueue<E> implements IQueue<E>{
 			public boolean hasNext()
 			{
 
-				return cur < count;
+				return cur < size;
 			}
 
 			@Override
@@ -237,5 +278,6 @@ public class ScalableQueue<E> implements IQueue<E>{
 			}
 		};
 	}
+
 
 }

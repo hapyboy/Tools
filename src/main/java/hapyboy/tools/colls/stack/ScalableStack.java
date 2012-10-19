@@ -13,26 +13,24 @@ import java.util.NoSuchElementException;
  * 本实现是非线程安全的，为了更简单更快速
  */
 
-public abstract class ScalableStack<E> implements Stack<E>{
-	/*
-	 * 可扩展专用堆栈
-	 */
+public class ScalableStack<E> implements Stack<E>{
+	
 	/** 容量*/
-	private int capacity;
-	/** 游标*/
-	private int limit;
+	protected int capacity;
+	/** 游标同时也是计数器*/
+	protected int cur;
 	/** 栈容器*/
-	private E[] stacks;
+	protected E[] stacks;
 	
 	/** 默认初始容量*/
-	private static final int LEN = 16;
+	protected static final int LEN = 16;
 	
-	public ScalableStack(){
+	protected ScalableStack(){
 		this(LEN);
 	}
 	
 	@SuppressWarnings("unchecked")
-	ScalableStack(int initcapacity){
+	protected ScalableStack(int initcapacity){
 		if(initcapacity < LEN){
 			initcapacity = LEN;
 		}
@@ -44,15 +42,20 @@ public abstract class ScalableStack<E> implements Stack<E>{
 		stacks = (E[]) Array.newInstance(clz, capacity);
 	}
 	
+	public ScalableStack(Class<E> clz)
+	{
+		this(clz,LEN);
+	}
+	
 	@SuppressWarnings("unchecked")
-	ScalableStack(Class<E> clz, int initcapacity){
+	public ScalableStack(Class<E> clz, int initcapacity){
 		if(initcapacity < LEN){
 			initcapacity = LEN;
 		}
 		capacity = initcapacity;
 		stacks = (E[]) Array.newInstance(clz, capacity);
 	}
-	
+
 	/**
 	 * 通过给定泛型，得到栈实例，初始容量采用默认值
 	 * 
@@ -71,59 +74,61 @@ public abstract class ScalableStack<E> implements Stack<E>{
 	 * @param initCapacity 初始化容量
 	 * @return 栈实例
 	 */
-	public static <T> ScalableStack<T> newInstance(final Class<T> clz, int initCapacity)
+	public static <T> ScalableStack<T> newInstance(final Class<T> claz, int initCapacity)
 	{
-		class SimpleStack extends ScalableStack<T>
-		{
-			SimpleStack(int capacity)
-			{
-				super(clz,capacity);
-			}
-		}
+//		class SimpleStack extends ScalableStack<T>
+//		{
+//			SimpleStack(int capacity)
+//			{
+//				super(clz,capacity);
+//			}
+//		}
+//		
+//		return new SimpleStack(initCapacity);
 		
-		return new SimpleStack(initCapacity);
+		return new ScalableStack<T>(claz,initCapacity);
 	}
 	
 	public boolean push(E e){
 		if(e == null){//不保存空值，如果obj为空不会抛出异常，仅仅返回false
 			return false;
 		}
-		if(limit == capacity){//堆栈满后调用方法来扩展
+		if(cur == capacity){//堆栈满后调用方法来扩展
 			expands();
 		}
-		stacks[limit++] = e;
+		stacks[cur++] = e;
 		return true;
 	}
 	
 	private void expands() {
 		// 容量扩展方法
 		capacity += capacity>>>1;//这里就不检查capacity超出int最大正数了，一般的应用基本不会超的
-		Arrays.copyOf(stacks, capacity);
+		stacks = Arrays.copyOf(stacks, capacity);
 		
 	}
 	public E pop(){
 		checkEmpty();
-		E e = stacks[--limit];
-		stacks[limit] = null;
-		if(capacity>16 && capacity/limit >2){
+		E e = stacks[--cur];
+		stacks[cur] = null;
+		if(capacity>16 && capacity/cur >2){
 			lower();
 		}
 		return e;
 	}
 	
 	private void lower() {
-		capacity = limit + (limit>>>1);
+		capacity = cur + (cur>>>1);
 		Arrays.copyOf(stacks, capacity);
 		
 	}
 	
 	public E peek(){
 		checkEmpty();
-		return stacks[limit-1];
+		return stacks[cur-1];
 	}
 	
 	private final void checkEmpty() {
-		if(limit == 0){
+		if(cur == 0){
 			throw new EmptyStackException();
 		}
 	}
@@ -131,16 +136,16 @@ public abstract class ScalableStack<E> implements Stack<E>{
 	public E peek(int index){
 		//从顶部开始记数，数字从0开始
 		//如最上面的对象（也就是调用pop会弹出的那个对象）的索引为0，它下面的为1，以此类推
-		if(index >= limit){
+		if(index >= cur){
 			throw new NoSuchElementException();
 		}
-		return stacks[limit-1-index];
+		return stacks[cur-1-index];
 	}
-	public int search(E obj){
+	public int search(E e){
 		//从顶部开始查找，找到后立即返回索引，如果没找到返回-1
-		int t = limit-1;
-		for (int i = 0; i < limit; i++) {
-			if(stacks[t].equals(obj)){
+		int t = cur-1;
+		for (int i = 0; i < cur; i++) {
+			if(stacks[t].equals(e)){
 				return i;
 			}
 			t--;
@@ -149,13 +154,13 @@ public abstract class ScalableStack<E> implements Stack<E>{
 	}
 	
 	public boolean isEmpty(){
-		return limit == 0;
+		return cur == 0;
 	}
 
 	@Override
 	public Iterator<E> iterator(){
 		return new Iterator<E>(){
-			private int t = limit-1;
+			private int t = cur-1;
 			public boolean hasNext() {
 				
 				return t>=0;
@@ -174,5 +179,18 @@ public abstract class ScalableStack<E> implements Stack<E>{
 			}
 			
 		}; 
+	}
+
+	@Override
+	public void clear()
+	{
+		if(cur<1){
+			return;
+		}
+		for(;cur>0;)
+		{
+			stacks[--cur] = null;
+		}
+		
 	}
 }

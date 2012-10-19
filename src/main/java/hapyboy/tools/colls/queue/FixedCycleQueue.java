@@ -12,22 +12,22 @@ import java.util.Iterator;
  * 
  * @author 赵利波 <zhaolibo@cyanclone.com>    
  */
-public abstract class FixedCycleQueue<E> implements IQueue<E>
+public class FixedCycleQueue<E> implements IQueue<E>
 {
 	/** 队列容器，用来存放所要容纳的元素*/
-	private E[] queue;
+	protected E[] queue;
 	/** 队列的头*/
-	private int head;
+	protected int head;
 	/** 队列尾*/
-	private int tail;
+	protected int tail;
 	/** 队列当前容量*/
-	private int size;
+	protected int size;
 	
 	/** 队列最大容量限制*/
-	private final int len;
+	protected final int len;
 
 	@SuppressWarnings("unchecked")
-	public FixedCycleQueue(int length)
+	protected FixedCycleQueue(int length)
 	{
 		this.len = length;
 		
@@ -53,16 +53,18 @@ public abstract class FixedCycleQueue<E> implements IQueue<E>
 	 */
 	public static <T> FixedCycleQueue<T> newInstance(final Class<T> claz, int capacity)
 	{
-		class SimpleQueue extends FixedCycleQueue<T>
-		{
-
-			public SimpleQueue( int capacity)
-			{
-				super(claz,capacity);
-			}
-			
-		}
-		return new SimpleQueue(capacity);
+//		class SimpleQueue extends FixedCycleQueue<T>
+//		{
+//
+//			public SimpleQueue( int capacity)
+//			{
+//				super(claz,capacity);
+//			}
+//			
+//		}
+//		return new SimpleQueue(capacity);
+		
+		return new FixedCycleQueue<T>(claz,capacity);
 	}
 
 	@Override
@@ -144,6 +146,23 @@ public abstract class FixedCycleQueue<E> implements IQueue<E>
 		}
 		return queue[head+index];
 	}
+	
+	@Override
+	public int search(E e){
+		return -1;
+	}
+
+	@Override
+	public void clear()
+	{
+		if(size < 1){
+			return;
+		}
+		for(;head != tail;){
+			queue[head++] = null;
+			checkHead();
+		}
+	}
 
 	
 	//----------------------------------迭代器部分----------------------------------
@@ -180,6 +199,5 @@ public abstract class FixedCycleQueue<E> implements IQueue<E>
 		};
 	}
 
-	
 
 }
