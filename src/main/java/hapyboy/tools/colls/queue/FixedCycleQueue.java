@@ -12,7 +12,7 @@ import java.util.Iterator;
  * 
  * @author 赵利波 <zhaolibo@cyanclone.com>    
  */
-public class FixedCycleQueue<E> implements IQueue<E>
+public abstract class FixedCycleQueue<E> implements IQueue<E>
 {
 	/** 队列容器，用来存放所要容纳的元素*/
 	private E[] queue;
@@ -35,6 +35,27 @@ public class FixedCycleQueue<E> implements IQueue<E>
 		Class<E> clz = gutil.getGeneric(this);
 		
 		queue = (E[]) Array.newInstance(clz, length);
+	}
+	
+	/**
+	 * 获取类实例
+	 * 
+	 * @param claz 队列里要容纳数据的类型
+	 * @param capacity 初始容量
+	 * @return 固定长度环绕队列
+	 */
+	public static <T> FixedCycleQueue<T> newInstance(Class<T> claz, int capacity)
+	{
+		class SimpleQueue extends FixedCycleQueue<T>
+		{
+
+			public SimpleQueue(int capacity)
+			{
+				super(capacity);
+			}
+			
+		}
+		return new SimpleQueue(capacity);
 	}
 
 	@Override

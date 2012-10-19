@@ -9,11 +9,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * 可扩展专用堆栈,堆栈容量会随着加入元素的增加而自动增加，会随着元素的减少自动减少。
- * 本实现是最基本的，没有对泛型、多线程的支持，这样是为了最简单最快速
+ * 可扩展堆,堆容量会随着加入元素的增加而自动增加，会随着元素的减少自动减少。
+ * 本实现是非线程安全的，为了更简单更快速
  */
 
-public class ScalableStack<E> implements Stack<E>{
+public abstract class ScalableStack<E> implements Stack<E>{
 	/*
 	 * 可扩展专用堆栈
 	 */
@@ -36,6 +36,37 @@ public class ScalableStack<E> implements Stack<E>{
 		Class<E> clz = gutil.getGeneric(this);
 		
 		stacks = (E[]) Array.newInstance(clz, capacity);
+	}
+	
+	/**
+	 * 通过给定泛型，得到栈实例，初始容量采用默认值
+	 * 
+	 * @param clz 栈内要容纳数据的类型
+	 * @return 栈实例
+	 */
+	public static <T> ScalableStack<T> newInstance(Class<T> clz)
+	{
+		return newInstance(clz, 16);
+	}
+	
+	/**
+	 * 通过给定泛型，和初始化容量得到栈实例
+	 * 
+	 * @param clz 栈内要容纳数据的类型
+	 * @param initCapacity 初始化容量
+	 * @return 栈实例
+	 */
+	public static <T> ScalableStack<T> newInstance(Class<T> clz, int initCapacity)
+	{
+		class SimpleStack extends ScalableStack<T>
+		{
+			SimpleStack(int capacity)
+			{
+				super(capacity);
+			}
+		}
+		
+		return new SimpleStack(initCapacity);
 	}
 	
 	public boolean push(E e){

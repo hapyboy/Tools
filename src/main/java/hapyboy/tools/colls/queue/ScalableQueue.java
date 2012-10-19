@@ -11,6 +11,8 @@ import java.util.NoSuchElementException;
  * 可扩展队列，
  * Note: 不做边界检查，容量超过int能表达的正数的2/3时可能出问题
  * 因为主要用在手机上，int的边界很大了，一般不会出问题
+ * 
+ * @author qingfeng
  */
 
 public class ScalableQueue<E> implements IQueue<E>{
@@ -39,6 +41,28 @@ public class ScalableQueue<E> implements IQueue<E>{
 		
 		queue = (E[]) Array.newInstance(clz, length);
 		
+	}
+	
+	/**
+	 * 获取可扩展队列
+	 * 
+	 * @param claz 队列内要容纳数据的类型
+	 * @param capacity 初始化容量
+	 * @return 可扩展队列实例
+	 */
+	public static <T> ScalableQueue<T> newInstance(Class<T> claz, int capacity)
+	{
+		class SimpleQueue extends ScalableQueue<T>
+		{
+
+			public SimpleQueue(int capacity)
+			{
+				super(capacity);
+			}
+			
+		}
+		
+		return new SimpleQueue(capacity);
 	}
 
 

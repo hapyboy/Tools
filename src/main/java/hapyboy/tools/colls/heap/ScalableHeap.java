@@ -6,7 +6,7 @@ import java.lang.reflect.Array;
 import java.util.Comparator;
 
 
-public class ScalableHeap <E>{
+public abstract class ScalableHeap <E>{
 	private E[] heap;
 	private int index;
 	Comparator<E> cc;
@@ -27,7 +27,42 @@ public class ScalableHeap <E>{
 		
 		heap =(E[]) Array.newInstance(clz, capacity);
 	}
+	
+	/**
+	 * 获取堆实例,初始容量为默认值
+	 * 
+	 * @param clz 堆里要存放数据的类型
+	 * @param comparator 数据比较器
+	 * @return 初始容量为默认大小的堆实例
+	 */
+	public static <T> ScalableHeap<T> newInstance(Class<T> clz, Comparator<T> comparator)
+	{
+		return newInstance(clz,comparator,16);
+	}
+	
+	/**
+	 * 获取指定初始大小的堆实例
+	 * 
+	 * @param clz 堆里要存放数据的类型
+	 * @param comparator 数据比较器
+	 * @param initCapacity 初始化容量
+	 * @return 堆实例
+	 */
+	public static <T> ScalableHeap<T> newInstance(Class<T> clz, Comparator<T> comparator, int initCapacity)
+	{
+		class SimpleHeap extends ScalableHeap<T>
+		{
 
+			public SimpleHeap(Comparator<T> comparator, int capacity)
+			{
+				super(comparator, capacity);
+			}
+		
+		}
+		
+		return new SimpleHeap(comparator,initCapacity);
+	}
+	
 	public boolean add(E p) {
 		if (p == null) {
 			return false;
